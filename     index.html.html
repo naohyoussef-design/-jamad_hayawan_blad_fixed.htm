@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>🎮 جماد حيوان بلاد</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(135deg,#0f172a,#1e1b4b);color:#fff;font-family:Arial,Tahoma,sans-serif;min-height:100vh;padding:10px}
+.app{max-width:1050px;margin:auto}
+h1{text-align:center;margin:5px 0 4px;font-size:28px}.hint{text-align:center;color:#cbd5e1;margin-bottom:12px}
+.stats{display:flex;gap:10px;margin-bottom:10px}.stat{flex:1;background:#ffffff12;border:1px solid #ffffff18;border-radius:16px;padding:10px;text-align:center}.stat b{display:block;font-size:25px;margin-top:3px}
+.panel{background:#0b1224ee;border:1px solid #ffffff18;border-radius:22px;padding:12px;box-shadow:0 15px 40px #0006}
+.top{display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap}
+.letter{background:#f59e0b;color:#111827;border-radius:18px;text-align:center;padding:8px 28px;min-width:125px}.letter small{display:block;font-weight:bold}.letter b{display:block;font-size:42px}
+.timer{background:#020617;border:2px solid #334155;border-radius:18px;padding:9px 25px;text-align:center}.timer b{display:block;font-size:35px;direction:ltr;font-variant-numeric:tabular-nums}.timer small{color:#94a3b8}
+.buttons{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;margin:12px 0}
+button{border:0;border-radius:13px;padding:11px 14px;color:white;font-weight:bold;font-size:14px;cursor:pointer;background:#334155}
+button:active{transform:scale(.97)}button:disabled{opacity:.35;cursor:not-allowed}
+.blue{background:#2563eb}.orange{background:#d97706}.red{background:#dc2626}.green{background:#16a34a}.purple{background:#7c3aed}
+.msg{text-align:center;min-height:23px;color:#fbbf24;font-weight:bold;margin:7px}
+.boardWrap{overflow-x:auto;padding-bottom:5px}
+.board{display:grid;grid-template-columns:repeat(6,minmax(120px,1fr));gap:8px;min-width:760px}
+.card{background:#172033;border:1px solid #ffffff12;border-radius:16px;padding:8px}
+.card h2{text-align:center;font-size:16px;margin:3px 0 8px}
+.answer{width:100%;height:65px;background:#07101f;color:#fff;border:1px solid #334155;border-radius:11px;resize:none;text-align:center;padding:10px;font-size:17px;outline:none}
+.answer:focus{border-color:#60a5fa}.answer:disabled{opacity:.65}
+.scoreBtns{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:7px}.scoreBtn{font-size:12px;padding:8px 3px}
+.scoreBtn.selected{background:#16a34a;outline:2px solid #86efac}.scoreBtn.dup.selected{background:#d97706;outline:2px solid #fed7aa}
+.points{text-align:center;color:#94a3b8;font-size:11px;margin-top:6px}
+.total{margin-top:10px;background:#1e1b4b;border-radius:16px;padding:11px;text-align:center}.total b{font-size:29px;display:block}
+.modalBg{display:none;position:fixed;inset:0;background:#000b;align-items:center;justify-content:center;padding:18px;z-index:5}.modal{background:#111827;border-radius:20px;padding:20px;max-width:400px;text-align:center;border:1px solid #ffffff18}.modal p{line-height:1.7;color:#cbd5e1}.modalBtns{display:flex;gap:8px;justify-content:center}
+footer{text-align:center;color:#64748b;font-size:11px;margin:12px}
+</style>
+</head>
+<body>
+<div class="app">
+<h1>🎮 جماد حيوان بلاد</h1>
+<div class="hint">الحرف يختاره النظام عشوائيًا — وبعد أتوبيس كومبليت يبدأ التصحيح</div>
+<div class="stats">
+<div class="stat">🎯 الدور <b id="round">1</b></div>
+<div class="stat">🏆 إجمالي السكور <b id="grand">0</b></div>
+</div>
+<div class="panel">
+<div class="top">
+<div class="letter"><small>الحرف</small><b id="letter">؟</b></div>
+<div class="timer"><small>الوقت</small><b id="timer">00:00.00</b></div>
+</div>
+<div class="buttons">
+<button id="random" class="orange">🎲 اختيار حرف عشوائي</button>
+<button id="start" class="blue">▶️ ابدأ</button>
+<button id="bus" class="red" disabled>🚌 أتوبيس كومبليت</button>
+<button id="next" class="green" disabled>➡️ دور جديد</button>
+<button id="newGame" class="purple">🔄 جولة جديدة</button>
+</div>
+<div class="msg" id="msg">اضغط «ابدأ» وسيختار النظام حرفًا عشوائيًا ويبدأ الوقت.</div>
+<div class="boardWrap"><div class="board">
+<div class="card"><h2>👦 ولد</h2><textarea class="answer" id="a0" disabled></textarea><div class="scoreBtns"><button class="scoreBtn" data-i="0" data-v="10" disabled>فردي<br>10</button><button class="scoreBtn dup" data-i="0" data-v="5" disabled>مكرر<br>5</button></div><div class="points" id="p0">0 نقطة</div></div>
+<div class="card"><h2>👧 بنت</h2><textarea class="answer" id="a1" disabled></textarea><div class="scoreBtns"><button class="scoreBtn" data-i="1" data-v="10" disabled>فردي<br>10</button><button class="scoreBtn dup" data-i="1" data-v="5" disabled>مكرر<br>5</button></div><div class="points" id="p1">0 نقطة</div></div>
+<div class="card"><h2>📦 جماد</h2><textarea class="answer" id="a2" disabled></textarea><div class="scoreBtns"><button class="scoreBtn" data-i="2" data-v="10" disabled>فردي<br>10</button><button class="scoreBtn dup" data-i="2" data-v="5" disabled>مكرر<br>5</button></div><div class="points" id="p2">0 نقطة</div></div>
+<div class="card"><h2>🐾 حيوان</h2><textarea class="answer" id="a3" disabled></textarea><div class="scoreBtns"><button class="scoreBtn" data-i="3" data-v="10" disabled>فردي<br>10</button><button class="scoreBtn dup" data-i="3" data-v="5" disabled>مكرر<br>5</button></div><div class="points" id="p3">0 نقطة</div></div>
+<div class="card"><h2>🌿 نبات</h2><textarea class="answer" id="a4" disabled></textarea><div class="scoreBtns"><button class="scoreBtn" data-i="4" data-v="10" disabled>فردي<br>10</button><button class="scoreBtn dup" data-i="4" data-v="5" disabled>مكرر<br>5</button></div><div class="points" id="p4">0 نقطة</div></div>
+<div class="card"><h2>🌍 بلاد</h2><textarea class="answer" id="a5" disabled></textarea><div class="scoreBtns"><button class="scoreBtn" data-i="5" data-v="10" disabled>فردي<br>10</button><button class="scoreBtn dup" data-i="5" data-v="5" disabled>مكرر<br>5</button></div><div class="points" id="p5">0 نقطة</div></div>
+</div></div>
+<div class="total">سكور الدور الحالي <b id="turnScore">0</b></div>
+</div>
+<footer>أثناء اللعب: اكتب الإجابات فقط • بعد أتوبيس كومبليت: صحح فردي/مكرر</footer>
+</div>
+<div class="modalBg" id="modal"><div class="modal"><h2>⚠️ جولة جديدة؟</h2><p>سيتم تصفير كل السكور والرجوع للدور الأول. هل تريد البدء من جديد؟</p><div class="modalBtns"><button id="cancel">إلغاء</button><button id="confirm" class="red">نعم، ابدأ من جديد</button></div></div></div>
+<script>
+(function(){
+var letters=["ا","ب","ت","ث","ج","ح","خ","د","ذ","ر","ز","س","ش","ص","ض","ط","ظ","ع","غ","ف","ق","ك","ل","م","ن","ه","و","ي"];
+var scores=[0,0,0,0,0,0],round=1,grand=0,letter="",running=false,finished=false,finalized=false,startTime=0,raf=null;
+function el(id){return document.getElementById(id)}
+function total(){return scores.reduce(function(a,b){return a+b},0)}
+function msg(x){el("msg").textContent=x}
+function clock(ms){var m=Math.floor(ms/60000),s=Math.floor(ms/1000)%60,c=Math.floor(ms/10)%100;return String(m).padStart(2,"0")+":"+String(s).padStart(2,"0")+"."+String(c).padStart(2,"0")}
+function update(){el("turnScore").textContent=total();for(var i=0;i<6;i++)el("p"+i).textContent=scores[i]+" نقطة"}
+function pick(){letter=letters[Math.floor(Math.random()*letters.length)];el("letter").textContent=letter}
+function tick(){if(!running)return;el("timer").textContent=clock(performance.now()-startTime);raf=requestAnimationFrame(tick)}
+function start(){
+if(running||finished)return;
+pick();scores=[0,0,0,0,0,0];update();running=true;finalized=false;startTime=performance.now();
+el("random").disabled=true;el("start").disabled=true;el("bus").disabled=false;el("next").disabled=true;
+document.querySelectorAll(".answer").forEach(function(x){x.disabled=false});
+document.querySelectorAll(".scoreBtn").forEach(function(x){x.disabled=true;x.classList.remove("selected")});
+msg("🔥 الحرف هو «"+letter+"» — اكتب إجاباتك. التصحيح مقفول لحد أتوبيس كومبليت.");
+tick()
+}
+function bus(){
+if(!running)return;
+running=false;finished=true;cancelAnimationFrame(raf);el("timer").textContent=clock(performance.now()-startTime);
+document.querySelectorAll(".answer").forEach(function(x){x.disabled=true});
+document.querySelectorAll(".scoreBtn").forEach(function(x){x.disabled=false;x.classList.remove("selected")});
+el("bus").disabled=true;el("next").disabled=false;
+msg("🚌 انتهى الدور! دلوقتي صحح كل إجابة باختيار «فردي» أو «مكرر».")
+}
+function next(){
+if(!finished)return;
+if(!finalized){grand+=total();finalized=true}
+round++;el("round").textContent=round;el("grand").textContent=grand;
+scores=[0,0,0,0,0,0];letter="";running=false;finished=false;finalized=false;
+el("letter").textContent="؟";el("timer").textContent="00:00.00";update();
+for(var i=0;i<6;i++)el("a"+i).value="";
+document.querySelectorAll(".scoreBtn").forEach(function(x){x.disabled=true;x.classList.remove("selected")});
+document.querySelectorAll(".answer").forEach(function(x){x.disabled=true});
+el("random").disabled=false;el("start").disabled=false;el("bus").disabled=true;el("next").disabled=true;
+msg("دور جديد 🎯 — اضغط «ابدأ» وسيختار النظام حرفًا جديدًا.")
+}
+function reset(){
+cancelAnimationFrame(raf);scores=[0,0,0,0,0,0];round=1;grand=0;letter="";running=false;finished=false;finalized=false;
+el("round").textContent="1";el("grand").textContent="0";el("letter").textContent="؟";el("timer").textContent="00:00.00";update();
+for(var i=0;i<6;i++)el("a"+i).value="";
+document.querySelectorAll(".scoreBtn").forEach(function(x){x.disabled=true;x.classList.remove("selected")});
+document.querySelectorAll(".answer").forEach(function(x){x.disabled=true});
+el("random").disabled=false;el("start").disabled=false;el("bus").disabled=true;el("next").disabled=true;
+el("modal").style.display="none";msg("اضغط «ابدأ» وسيختار النظام حرفًا عشوائيًا ويبدأ الوقت.")
+}
+el("random").onclick=function(){if(!running&&!finished){pick();msg("الحرف المختار: «"+letter+"». عند الضغط على «ابدأ» سيتم اختيار حرف عشوائي جديد للدور.")}};
+el("start").onclick=start;el("bus").onclick=bus;el("next").onclick=next;
+el("newGame").onclick=function(){el("modal").style.display="flex"};
+el("cancel").onclick=function(){el("modal").style.display="none"};el("confirm").onclick=reset;
+document.querySelectorAll(".scoreBtn").forEach(function(btn){btn.onclick=function(){
+if(!finished||running)return;
+var i=Number(btn.getAttribute("data-i")),v=Number(btn.getAttribute("data-v"));
+if(!el("a"+i).value.trim()){scores[i]=0;document.querySelectorAll('.scoreBtn[data-i="'+i+'"]').forEach(function(b){b.classList.remove("selected")});update();msg("الإجابة الفارغة = 0 نقطة.");return}
+document.querySelectorAll('.scoreBtn[data-i="'+i+'"]').forEach(function(b){b.classList.remove("selected")});
+btn.classList.add("selected");scores[i]=v;update()
+}});
+update()
+})();
+</script>
+</body>
+</html>
